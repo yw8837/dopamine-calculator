@@ -68,7 +68,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             margin-top: 20px;
         }
 
@@ -224,7 +224,7 @@
         /* Result Screen Styles */
         #resultPage {
             text-align: center;
-            padding-top: 20px;
+            padding-top: 40px;
         }
 
         .result-title {
@@ -232,7 +232,7 @@
             color: var(--text-dim);
             text-transform: uppercase;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
             letter-spacing: 1px;
         }
 
@@ -255,19 +255,31 @@
             font-size: 20px;
             color: var(--text-dim);
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
+        }
+
+        .receipt-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: inline-block;
+            color: var(--text-main);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
 
         .gukbap-badge {
             background: #1c2128;
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 12px 24px;
+            padding: 14px 28px;
             border-radius: 50px;
             display: inline-block;
             font-weight: 800;
-            margin-bottom: 20px;
-            font-size: 17px;
+            margin-bottom: 32px;
+            font-size: 18px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
@@ -275,7 +287,7 @@
             font-size: 20px;
             font-weight: 700;
             line-height: 1.5;
-            margin-bottom: 40px;
+            margin-bottom: 48px;
             color: var(--text-main);
             padding: 0 10px;
             word-break: keep-all; 
@@ -290,7 +302,6 @@
             font-weight: 700;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
         }
 
         /* Banner System */
@@ -509,6 +520,7 @@
         <div class="result-title">최종 도파민 등급</div>
         <div class="final-grade" id="finalGrade">A</div>
         <div class="final-score">SCORE: <span id="finalScore">0</span></div>
+        <div class="receipt-summary" id="receiptSummary">0원 / 분석 중</div>
         <div class="gukbap-badge" id="gukbapText">국밥 0그릇</div>
 
         <!-- AD SPACE B -->
@@ -549,6 +561,7 @@
     <script>
         let selectedHappiness = 5;
         let selectedCategoryMultiplier = 1.0;
+        let selectedCategoryText = "🍚 맛있는 식비";
         const amountInput = document.getElementById('amount');
 
         // Input Comma formatting
@@ -567,6 +580,7 @@
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             el.classList.add('active');
             selectedCategoryMultiplier = multiplier;
+            selectedCategoryText = el.innerText;
         }
 
         function showAlert(title, text) {
@@ -687,6 +701,7 @@
             document.getElementById('finalGrade').innerText = grade;
             document.getElementById('finalGrade').style.color = color;
             document.getElementById('finalScore').innerText = score;
+            document.getElementById('receiptSummary').innerText = `${amount.toLocaleString()}원 / ${selectedCategoryText}`;
             document.getElementById('gukbapText').innerText = `🔥 11,000원짜리 국밥 ${gukbapValue}그릇 증발`;
             document.getElementById('aiComment').innerText = comment;
 
@@ -747,7 +762,10 @@
                 });
                 document.querySelectorAll('.category-btn').forEach(btn => {
                     btn.classList.remove('active');
-                    if (btn.getAttribute('onclick').includes(selectedCategoryMultiplier)) btn.classList.add('active');
+                    if (btn.getAttribute('onclick').includes(selectedCategoryMultiplier)) {
+                        btn.classList.add('active');
+                        selectedCategoryText = btn.innerText;
+                    }
                 });
 
                 // 계산 및 화면 전환 (URL 변경 안 함)
