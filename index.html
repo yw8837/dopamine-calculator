@@ -16,7 +16,7 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     
     <!-- Kakao SDK -->
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-lX9Wf9p1vG9jP9g8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8" crossorigin="anonymous"></script>
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
 
     <style>
         :root {
@@ -626,28 +626,46 @@
             }
         }
 
+        // --- 카카오 SDK 초기화 ---
+        if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
+            Kakao.init('57cdad81ce5f54c9c0220d9b346276ff');
+        }
+
         // --- 공유 기능 ---
         function shareKakao() {
-            // 카카오 SDK 초기화 방어 코드 (키가 없으면 팝업 띄움)
             try {
-                if (!Kakao.isInitialized()) {
-                    // 추후 회장님의 JavaScript 키로 교체 필요 ('YOUR_KAKAO_JS_KEY')
-                    // Kakao.init('YOUR_KAKAO_JS_KEY'); 
-                    showAlert('🚧 개발 중', '카카오톡 공유 API 키가 아직 연동되지 않았습니다.<br>추후 본 서버 이관 시 개발자 뚝딱이가 0.1초 만에 붙일 예정입니다!');
+                if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+                    showAlert('🚧 알림', '카카오 SDK 로딩에 실패했습니다.<br>잠시 후 다시 시도해주세요.');
                     return;
                 }
-                
-                // 추후 연동될 실제 공유 로직
+
+                const grade = document.getElementById('finalGrade').innerText;
+                const gukbap = document.getElementById('gukbapText').innerText;
+                const score = document.getElementById('finalScore').innerText;
+
                 Kakao.Share.sendDefault({
-                    objectType: 'text',
-                    text: `내 도파민 등급은 ${document.getElementById('finalGrade').innerText}!\n앗 뜨거워 내 ${document.getElementById('gukbapText').innerText}`,
-                    link: {
-                        mobileWebUrl: window.location.href,
-                        webUrl: window.location.href,
+                    objectType: 'feed',
+                    content: {
+                        title: '🔥 내 도파민 등급: ' + grade + '등급!',
+                        description: gukbap + ' | SCORE: ' + score + '\n내 소비의 가심비는 과연 몇 등급일까?',
+                        imageUrl: 'https://yw8837.github.io/dopamine-calculator/yeolmae_logo.png',
+                        link: {
+                            mobileWebUrl: window.location.href,
+                            webUrl: window.location.href,
+                        },
                     },
+                    buttons: [
+                        {
+                            title: '나도 측정하기',
+                            link: {
+                                mobileWebUrl: 'https://yw8837.github.io/dopamine-calculator/',
+                                webUrl: 'https://yw8837.github.io/dopamine-calculator/',
+                            },
+                        },
+                    ],
                 });
             } catch (error) {
-                showAlert('🚧 알림', '카카오톡 공유 기능을 준비 중입니다.');
+                showAlert('🚧 알림', '카카오톡 공유 중 오류가 발생했습니다.<br>' + error.message);
             }
         }
 
