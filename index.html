@@ -7,15 +7,12 @@
     <!-- Open Graph (공유 미리보기 최적화) -->
     <meta property="og:title" content="도파민 가성비 계산기 💸">
     <meta property="og:description" content="내 소비의 가심비는 과연 몇 등급일까? 지금 바로 팩폭 진단받기!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop">
+    <meta property="og:image" content="https://yw8837.github.io/dopamine-calculator/yeolmae_logo.png">
     <meta property="og:type" content="website">
 
-    <title>도파민 가성비 계산기 | Antigravity Project 1</title>
+    <title>도파민 가성비 계산기 | 열매스튜디오</title>
     
-    <!-- Fonts: Pretendard -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-    
-    <!-- Kakao SDK -->
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-lX9Wf9p1vG9jP9g8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8r8" crossorigin="anonymous"></script>
 
     <style>
@@ -32,9 +29,7 @@
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0; padding: 0; box-sizing: border-box;
             font-family: 'Pretendard', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
@@ -50,438 +45,142 @@
             overflow-x: hidden;
         }
 
-        /* Screen Wrapper */
         .screen {
-            width: 100%;
-            max-width: 480px;
-            display: none; /* hidden by default */
-            flex-direction: column;
+            width: 100%; max-width: 480px;
+            display: none; flex-direction: column;
             animation: slideIn var(--transition-speed) cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
-        .screen.active {
-            display: flex;
-        }
+        .screen.active { display: flex; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-30px); } }
 
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-30px); }
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            margin-top: 20px;
-        }
+        header { text-align: center; margin-bottom: 30px; margin-top: 20px; }
 
         .logo {
-            font-size: 14px;
-            font-weight: 800;
-            color: var(--primary-orange);
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; font-size: 14px; font-weight: 800;
+            color: var(--primary-orange); letter-spacing: 2px;
+            margin-bottom: 8px; text-transform: uppercase; cursor: pointer;
         }
 
+        .logo img { width: 24px; height: 24px; border-radius: 6px; }
+
         h1 {
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 28px; font-weight: 800;
             background: linear-gradient(90deg, var(--primary-orange), var(--accent-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px;
         }
 
-        .input-group {
-            margin-bottom: 28px;
-        }
+        .input-group { margin-bottom: 28px; }
+        label { display: block; font-size: 17px; color: var(--text-main); margin-bottom: 14px; font-weight: 700; }
 
-        label {
-            display: block;
-            font-size: 17px; 
-            color: var(--text-main); 
-            margin-bottom: 14px;
-            font-weight: 700;
-        }
-
-        /* 2x2 Grid Category Chips */
-        .category-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding-bottom: 8px;
-        }
-
+        .category-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .category-btn {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 14px 8px; 
-            color: var(--text-dim);
-            font-size: 16px; 
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            text-align: center;
+            background: var(--bg-color); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 14px 8px; color: var(--text-dim);
+            font-size: 16px; font-weight: 800; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); text-align: center;
         }
-
         .category-btn.active {
-            background: rgba(255, 146, 43, 0.15);
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(255, 146, 43, 0.2);
+            background: rgba(255, 146, 43, 0.15); border-color: var(--primary-orange);
+            color: var(--primary-orange); transform: scale(1.02);
         }
 
-        /* Amount Input */
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
+        .input-wrapper { position: relative; display: flex; align-items: center; }
         input[type="text"] {
-            width: 100%;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px 16px;
-            color: var(--text-main);
-            font-size: 28px; 
-            font-weight: 800;
-            outline: none;
-            transition: border-color 0.3s;
+            width: 100%; background: var(--bg-color); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 18px 16px; color: var(--text-main);
+            font-size: 28px; font-weight: 800; outline: none;
         }
+        .currency { position: absolute; right: 20px; color: var(--text-dim); font-size: 22px; font-weight: 800; }
 
-        input[type="text"]:focus {
-            border-color: var(--primary-orange);
-        }
-
-        .currency {
-            position: absolute;
-            right: 20px;
-            color: var(--text-dim);
-            font-size: 22px; 
-            font-weight: 800;
-        }
-
-        /* Emoji Buttons */
-        .emoji-selector {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
+        .emoji-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .emoji-btn {
-            background: var(--bg-color);
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 15px 0;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            background: var(--bg-color); border: 2px solid var(--border-color);
+            border-radius: 16px; padding: 15px 0; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
-
         .emoji-btn span { font-size: 34px; }
         .emoji-btn small { font-size: 13px; color: var(--text-dim); font-weight: 800; }
-        
-        .emoji-btn.active { 
-            border-color: var(--primary-orange); 
-            background: rgba(255, 146, 43, 0.1); 
-            transform: scale(1.05); 
-        }
-        .emoji-btn.active small { color: var(--primary-orange); }
+        .emoji-btn.active { border-color: var(--primary-orange); background: rgba(255, 146, 43, 0.1); }
 
         .btn-calculate {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary-orange), var(--accent-pink));
-            border: none;
-            border-radius: 14px;
-            padding: 20px;
-            color: white;
-            font-size: 20px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 146, 43, 0.3);
-            margin-top: 10px;
+            width: 100%; background: linear-gradient(135deg, var(--primary-orange), var(--accent-pink));
+            border: none; border-radius: 14px; padding: 20px; color: white;
+            font-size: 20px; font-weight: 800; cursor: pointer;
         }
 
-        .btn-calculate:active {
-            transform: scale(0.98);
-            filter: brightness(1.1);
-        }
-
-        /* Result Screen Styles */
-        #resultPage {
-            text-align: center;
-            padding-top: 40px;
-        }
-
-        .result-title {
-            font-size: 16px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            font-weight: 800;
-            margin-bottom: 16px;
-            letter-spacing: 1px;
-        }
-
-        .final-grade {
-            font-size: 140px;
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 10px;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            70% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .final-score {
-            font-size: 20px;
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
+        #resultPage { text-align: center; padding-top: 40px; }
+        .final-grade { font-size: 140px; font-weight: 900; line-height: 1; margin-bottom: 10px; }
+        .final-score { font-size: 20px; color: var(--text-dim); font-weight: 600; margin-bottom: 8px; }
         .receipt-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 8px 16px;
-            display: inline-block;
-            color: var(--text-main);
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05); border-radius: 8px;
+            padding: 8px 16px; display: inline-block; color: var(--text-main);
+            font-size: 15px; font-weight: 700; margin-bottom: 24px; border: 1px solid var(--border-color);
         }
-
         .gukbap-badge {
-            background: #1c2128;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 14px 28px;
-            border-radius: 50px;
-            display: inline-block;
-            font-weight: 800;
-            margin-bottom: 32px;
-            font-size: 18px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            background: #1c2128; border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 14px 28px; border-radius: 50px;
+            display: inline-block; font-weight: 800; margin-bottom: 32px; font-size: 18px;
         }
+        .ai-analysis { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 48px; }
 
-        .ai-analysis {
-            font-size: 20px;
-            font-weight: 700;
-            line-height: 1.5;
-            margin-bottom: 48px;
-            color: var(--text-main);
-            padding: 0 10px;
-            word-break: keep-all; 
-        }
-
-        .btn-home {
-            background: var(--border-color);
-            color: var(--text-main);
-            border: none;
-            border-radius: 12px;
-            padding: 16px 32px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        /* Banner System */
-        .banner-container {
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .banner {
-            flex: 1;
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 10px 8px;
-            text-decoration: none;
-            border: 1px solid var(--border-color);
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .banner:hover { transform: scale(1.02); background: #30363d; }
-        .banner-desc { font-size: 13px; color: var(--text-main); font-weight: 700; }
-        .banner-title { font-size: 9px; color: var(--primary-orange); font-weight: 800; display: block; margin-bottom: 2px; }
-
-        /* Ad Banner Placeholder */
         .ad-banner-dummy {
-            width: 100%;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px dashed var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-dim);
-            font-size: 11px;
-            font-weight: 500;
-            margin: 16px 0 8px 0;
-            text-align: center;
-            line-height: 1.5;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .ad-banner-dummy b {
-            color: var(--text-dim);
-            font-size: 13px;
-            margin-bottom: 4px;
+            width: 100%; height: 100px; background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border-color); border-radius: 12px;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; color: var(--text-dim); font-size: 11px; margin: 16px 0;
         }
 
-        /* Action Buttons on Result Page */
-        .result-actions {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-            padding: 0 20px;
-        }
-
-        .btn-share {
-            flex: 1;
-            padding: 14px 0;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
+        .result-actions { display: flex; gap: 12px; margin-bottom: 24px; padding: 0 20px; }
+        .btn-share { flex: 1; padding: 14px 0; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; }
         .btn-share.kakao { background: #FEE500; color: #000000; }
         .btn-share.link { background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); }
-        .btn-share:active { transform: scale(0.96); filter: brightness(0.9); }
 
-        /* Footer Disclaimer - 3 Links */
+        .brand-signature {
+            width: 100%; display: flex; flex-direction: column; align-items: center;
+            margin-top: auto; padding: 30px 0 10px 0; opacity: 0.7;
+        }
+        .brand-signature img { height: 32px; width: auto; }
+
         .footer-disclaimer {
-            width: 100%;
-            max-width: 480px;
-            padding: 24px 10px;
-            margin-top: auto; 
-            border-top: 1px dashed var(--border-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
+            width: 100%; max-width: 480px; padding: 24px 10px;
+            border-top: 1px dashed var(--border-color); display: flex; justify-content: center; gap: 20px;
         }
+        .footer-link { font-size: 12px; color: var(--text-dim); font-weight: 600; cursor: pointer; }
 
-        .footer-link {
-            font-size: 12px;
-            color: var(--text-dim);
-            font-weight: 600;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .footer-link:hover {
-            color: var(--text-main);
-            text-decoration: underline;
-        }
-
-        /* Custom Modal for Alerts */
         .custom-alert {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 9999; display: none; justify-content: center; align-items: center;
         }
         .custom-alert-content {
-            background: var(--card-bg);
-            border: 1px solid var(--primary-orange);
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 320px;
-            width: 100%;
-            text-align: center;
-            animation: popIn 0.3s forwards;
-            line-height: 1.5;
+            background: var(--card-bg); border: 1px solid var(--primary-orange);
+            border-radius: 16px; padding: 24px; max-width: 320px; width: 100%; text-align: center;
         }
-        .custom-alert-title {
-            color: var(--primary-orange);
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-        .custom-alert-text {
-            color: var(--text-main);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-        .custom-alert-btn {
-            background: var(--border-color);
-            color: var(--text-main);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
+        .custom-alert-title { color: var(--primary-orange); font-weight: 800; margin-bottom: 12px; }
+        .custom-alert-text { color: var(--text-main); font-size: 14px; margin-bottom: 24px; }
+        .custom-alert-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <!-- [SCREEN 1: INPUT] -->
     <div class="screen active" id="inputPage">
         <header>
-            <div class="logo">Yeolmae Studio</div>
+            <div class="logo" onclick="goToInput()">
+                <img src="yeolmae_logo.png" alt="Icon">
+                Yeolmae Studio
+            </div>
             <h1>도파민 가성비 계산기</h1>
         </header>
 
-        <div class="banner-container">
-            <div class="banner" style="opacity: 0.4; pointer-events: none;">
-                <span class="banner-title">COMING SOON</span>
-                <span class="banner-desc">매몰비용 📉</span>
-            </div>
-            <div class="banner" style="opacity: 0.4; pointer-events: none;">
-                <span class="banner-title">COMING SOON</span>
-                <span class="banner-desc">번아웃 🔋</span>
-            </div>
-        </div>
-
         <div class="card">
-            
-            <!-- Category Chips 2x2 -->
             <div class="input-group">
                 <label>어디에 쓰셨나요?</label>
                 <div class="category-selector">
@@ -492,7 +191,6 @@
                 </div>
             </div>
 
-            <!-- Amount Input -->
             <div class="input-group">
                 <label>얼마를 쓰셨나요?</label>
                 <div class="input-wrapper">
@@ -501,7 +199,6 @@
                 </div>
             </div>
 
-            <!-- Emoji Selector -->
             <div class="input-group">
                 <label>그 지출로 얼마나 행복했나요?</label>
                 <div class="emoji-selector">
@@ -513,51 +210,32 @@
             </div>
 
             <button class="btn-calculate" onclick="goToResult()">도파민 측정(국밥지수)</button>
-
-            <!-- AD SPACE A -->
-            <div class="ad-banner-dummy">
-                <b>SPONSORED AD</b>
-                Google AdSense / KaKao AdFit
-            </div>
+            <div class="ad-banner-dummy"><b>SPONSORED AD</b>Google AdSense / KaKao AdFit</div>
         </div>
-
     </div>
 
-    <!-- [SCREEN 2: RESULT] -->
     <div class="screen" id="resultPage">
         <div class="result-title">최종 도파민 등급</div>
         <div class="final-grade" id="finalGrade">A</div>
         <div class="final-score">SCORE: <span id="finalScore">0</span></div>
         <div class="receipt-summary" id="receiptSummary">0원 / 분석 중</div>
         <div class="gukbap-badge" id="gukbapText">국밥 0그릇</div>
-
-        <!-- AD SPACE B -->
-        <div class="ad-banner-dummy" style="margin-top: 0; margin-bottom: 24px;">
-            <b>SPONSORED AD</b>
-            Google AdSense / KaKao AdFit
-        </div>
-
+        <div class="ad-banner-dummy" style="margin-top: 0; margin-bottom: 24px;"><b>SPONSORED AD</b>Google AdSense / KaKao AdFit</div>
         <div class="ai-analysis" id="aiComment">분석 중...</div>
-        
-        <!-- Share Buttons -->
         <div class="result-actions">
             <button class="btn-share kakao" onclick="shareKakao()">💬 카카오 공유</button>
             <button class="btn-share link" onclick="copyLink()">🔗 링크 복사</button>
         </div>
-
-        <div style="margin-top: auto; padding-bottom: 20px;">
-            <button class="btn-home" onclick="goToInput()">현생으로 복귀 (다시 하기)</button>
-        </div>
+        <div style="margin-top: auto; padding-bottom: 20px;"><button class="btn-home" onclick="goToInput()">현생으로 복귀</button></div>
     </div>
 
-    <!-- Footer Disclaimer Links -->
+    <div class="brand-signature"><img src="yeolmae_global_logo.png" alt="Yeolmae Studio Logo"></div>
     <footer class="footer-disclaimer">
         <span class="footer-link" onclick="showTerms('service')">이용 약관</span>
         <span class="footer-link" onclick="showTerms('privacy')">개인정보처리 방침</span>
         <span class="footer-link" onclick="showTerms('disclaimer')">면책 조항</span>
     </footer>
 
-    <!-- Custom Alert Modal -->
     <div class="custom-alert" id="customAlert">
         <div class="custom-alert-content">
             <div class="custom-alert-title" id="alertTitle">알림</div>
@@ -567,237 +245,51 @@
     </div>
 
     <script>
-        let selectedHappiness = 5;
-        let selectedCategoryMultiplier = 1.0;
-        let selectedCategoryText = "🍚 맛있는 식비";
+        let selectedHappiness = 5; let selectedCategoryMultiplier = 1.0; let selectedCategoryText = "🍚 맛있는 식비";
         const amountInput = document.getElementById('amount');
-
-        // Input Comma formatting
         amountInput.addEventListener('input', (e) => {
             let value = e.target.value.replace(/[^0-9]/g, '');
             e.target.value = value ? Number(value).toLocaleString() : '';
         });
-
-        function selectEmoji(el, value) {
-            document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('active'));
-            el.classList.add('active');
-            selectedHappiness = value;
-        }
-
-        function selectCategory(el, multiplier) {
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            el.classList.add('active');
-            selectedCategoryMultiplier = multiplier;
-            selectedCategoryText = el.innerText;
-        }
-
-        function showAlert(title, text) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertText').innerHTML = text; // allow <br>
-            document.getElementById('customAlert').style.display = 'flex';
-        }
-
-        function closeAlert() {
-            document.getElementById('customAlert').style.display = 'none';
-        }
-
+        function selectEmoji(el, value) { document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('active')); el.classList.add('active'); selectedHappiness = value; }
+        function selectCategory(el, multiplier) { document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); el.classList.add('active'); selectedCategoryMultiplier = multiplier; selectedCategoryText = el.innerText; }
+        function showAlert(title, text) { document.getElementById('alertTitle').innerText = title; document.getElementById('alertText').innerHTML = text; document.getElementById('customAlert').style.display = 'flex'; }
+        function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
         function showTerms(type) {
-            if (type === 'service') {
-                showAlert('이용 약관', '본 유틸리티는 자본주의 생존을 위한 재미 목적의 도파민 시뮬레이터입니다. 너무 과몰입하지 마세요!');
-            } else if (type === 'privacy') {
-                showAlert('개인정보처리 방침', '여러분의 소중한 소비 내역은 서버에 절대 저장되지 않습니다.<br>(사실 저장할 서버도 없습니다.)');
-            } else if (type === 'disclaimer') {
-                showAlert('면책 조항', '결과에 충격을 받아 충동적인 추가 소비를 하더라도 열매스튜디오는 어떠한 법적/도의적 책임을 지지 않습니다.');
-            }
+            if (type === 'service') showAlert('이용 약관', '본 유틸리티는 재미 목적의 도파민 시뮬레이터입니다.');
+            else if (type === 'privacy') showAlert('개인정보처리 방침', '데이터는 서버에 저장되지 않습니다.');
+            else if (type === 'disclaimer') showAlert('면책 조항', '결과에 대한 법적 책임을 지지 않습니다.');
         }
-
-        // --- 공유 기능 ---
-        function shareKakao() {
-            // 카카오 SDK 초기화 방어 코드 (키가 없으면 팝업 띄움)
-            try {
-                if (!Kakao.isInitialized()) {
-                    // 추후 회장님의 JavaScript 키로 교체 필요 ('YOUR_KAKAO_JS_KEY')
-                    // Kakao.init('YOUR_KAKAO_JS_KEY'); 
-                    showAlert('🚧 개발 중', '카카오톡 공유 API 키가 아직 연동되지 않았습니다.<br>추후 본 서버 이관 시 개발자 뚝딱이가 0.1초 만에 붙일 예정입니다!');
-                    return;
-                }
-                
-                // 추후 연동될 실제 공유 로직
-                Kakao.Share.sendDefault({
-                    objectType: 'text',
-                    text: `내 도파민 등급은 ${document.getElementById('finalGrade').innerText}!\n앗 뜨거워 내 ${document.getElementById('gukbapText').innerText}`,
-                    link: {
-                        mobileWebUrl: window.location.href,
-                        webUrl: window.location.href,
-                    },
-                });
-            } catch (error) {
-                showAlert('🚧 알림', '카카오톡 공유 기능을 준비 중입니다.');
-            }
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                showAlert('🔗 복사 완료', '현생 탈출 좌표가 클립보드에 복사되었습니다!<br>친구들에게 도파민 수치를 자랑(또는 참회)해 보세요.');
-            }).catch(() => {
-                showAlert('오류', '링크 복사를 지원하지 않는 브라우저입니다.');
-            });
-        }
-
+        function copyLink() { navigator.clipboard.writeText(window.location.href).then(() => showAlert('🔗 복사 완료', '링크가 복사되었습니다.')); }
         function goToResult(pushHistory = true) {
-            const rawAmount = amountInput.value.replace(/,/g, '');
-            const amount = parseInt(rawAmount);
-            
-            if (!amount || amount <= 0) {
-                showAlert('알림', "지출 금액을 입력해주세요, 회장님!");
-                return;
-            }
-
-            if (pushHistory) {
-                const url = new URL(window.location);
-                url.searchParams.set('a', amount);
-                url.searchParams.set('h', selectedHappiness);
-                url.searchParams.set('c', selectedCategoryMultiplier);
-                window.history.pushState({ screen: 'result' }, '', url);
-            }
-
-            // 스코어 기본 연산 = (행복도 * 카테고리 가중치 / 금액) * 100000 
-            // 징벌적(?) 수치는 투명하게 공개하되, 등급 부여 시에만 회장님의 가심비 특례법을 적용합니다.
+            const rawAmount = amountInput.value.replace(/,/g, ''); const amount = parseInt(rawAmount);
+            if (!amount || amount <= 0) { showAlert('알림', "금액을 입력해주세요!"); return; }
+            if (pushHistory) { const url = new URL(window.location); url.searchParams.set('a', amount); url.searchParams.set('h', selectedHappiness); url.searchParams.set('c', selectedCategoryMultiplier); window.history.pushState({ screen: 'result' }, '', url); }
             const score = Math.round(((selectedHappiness * selectedCategoryMultiplier) / amount) * 100000);
-
             const gukbapValue = (amount / 11000).toFixed(1);
-
-            let grade = "";
-            let comment = "";
-            let color = "#ff922b";
-
-            // S, A, B, C, F 로직 적용
-            if (score >= 120 || (selectedHappiness === 10 && amount <= 300000)) { 
-                grade = "S";
-                if (score < 120) {
-                    comment = "👑 [갓심비 폭발!!] 처참한 스코어(?)를 씹어먹는 행복도 100%! 당당하게 킹성비(S급)를 부여합니다!";
-                } else {
-                    comment = "👑 이건 투찰을 넘어선 예술입니다! 뇌 척수액에서 도파민 파티가 열렸군요. 완벽한 지출입니다!";
-                }
-                color = "#ffd700"; 
-            } else if (score >= 60 || (selectedHappiness === 10 && amount <= 999999)) {
-                grade = "A";
-                if (score < 60) {
-                    comment = "🟢 [가심비 타협점] 점수 따위가 무슨 상관! 비쌌어도 영혼이 만족했다면 A급 도파민 소비로 인정합니다!";
-                } else {
-                    comment = "🟢 아주 훌륭한 소비입니다! 가성비와 득템의 쾌감을 모두 챙긴 똑똑한 투자군요.";
-                }
-                color = "#00e676";
-            } else if (score >= 20 || selectedHappiness === 10) {
-                grade = "B";
-                if (score < 20) {
-                    comment = "🟠 통장은 박살 났고, 스코어는 바닥이지만... 뇌는 웃고 있습니다! 100만 원대 플렉스를 '특별 B등급'으로 방어합니다!";
-                } else {
-                    comment = "🟠 나쁘지 않은, 꽤 무난한 소비군요. 현생 유지를 위한 필수 도파민 정도 챙기셨습니다.";
-                }
-                color = "#ff922b";
-            } else if (score >= 5 && selectedHappiness !== 1) {
-                grade = "C";
-                comment = "🟣 기분 대비 조금 비싼 감이 있습니다. 카드 명세서가 날아올 때 속이 약간 쓰릴 수도 있겠네요.";
-                color = "#b388ff"; 
-            } else { 
-                grade = "F";
-                comment = "🔴 이건 완벽한 재앙입니다. 차라리 그 돈으로 국밥을 때렸어야 했습니다. 즉시 참회 요망.";
-                color = "#ff1744"; 
-            }
-
-            document.getElementById('finalGrade').innerText = grade;
-            document.getElementById('finalGrade').style.color = color;
-            document.getElementById('finalScore').innerText = score;
-            document.getElementById('receiptSummary').innerText = `${amount.toLocaleString()}원 / ${selectedCategoryText}`;
-            document.getElementById('gukbapText').innerText = `🔥 11,000원짜리 국밥 ${gukbapValue}그릇 증발`;
+            let grade = ""; let comment = ""; let color = "#ff922b";
+            if (score >= 120) { grade = "S"; comment = "👑 완벽한 지출입니다!"; color = "#ffd700"; }
+            else if (score >= 60) { grade = "A"; comment = "🟢 훌륭한 소비입니다!"; color = "#00e676"; }
+            else if (score >= 20) { grade = "B"; comment = "🟠 무난한 소비입니다."; color = "#ff922b"; }
+            else if (score >= 5) { grade = "C"; comment = "🟣 비싼 감이 있네요."; color = "#b388ff"; }
+            else { grade = "F"; comment = "🔴 재앙입니다. 국밥 사드세요."; color = "#ff1744"; }
+            document.getElementById('finalGrade').innerText = grade; document.getElementById('finalGrade').style.color = color;
+            document.getElementById('finalScore').innerText = score; document.getElementById('receiptSummary').innerText = `${amount.toLocaleString()}원 / ${selectedCategoryText}`;
+            document.getElementById('gukbapText').innerText = `🔥 국밥 ${gukbapValue}그릇 증발`;
             document.getElementById('aiComment').innerText = comment;
-
-            const inputPage = document.getElementById('inputPage');
-            const resultPage = document.getElementById('resultPage');
-
-            if (resultPage.classList.contains('active')) return;
-
-            const gradeEl = document.getElementById('finalGrade');
-            gradeEl.style.animation = 'none';
-            gradeEl.offsetHeight;
-            gradeEl.style.animation = null;
-
-            inputPage.style.animation = "fadeOut 0.4s forwards";
-            setTimeout(() => {
-                inputPage.classList.remove('active');
-                resultPage.style.animation = "slideIn 0.5s forwards";
-                resultPage.classList.add('active');
-            }, 400);
+            document.getElementById('inputPage').classList.remove('active'); document.getElementById('resultPage').classList.add('active');
         }
-
         function goToInput(pushHistory = true) {
-            if (pushHistory) {
-                const url = new URL(window.location);
-                url.search = ''; 
-                window.history.pushState({ screen: 'input' }, '', url);
-            }
-
-            const inputPage = document.getElementById('inputPage');
-            const resultPage = document.getElementById('resultPage');
-
-            if (inputPage.classList.contains('active')) return;
-
-            resultPage.style.animation = "fadeOut 0.4s forwards";
-            setTimeout(() => {
-                resultPage.classList.remove('active');
-                inputPage.style.animation = "slideIn 0.5s forwards";
-                inputPage.classList.add('active');
-            }, 400);
+            if (pushHistory) { const url = new URL(window.location); url.search = ''; window.history.pushState({ screen: 'input' }, '', url); }
+            document.getElementById('resultPage').classList.remove('active'); document.getElementById('inputPage').classList.add('active');
         }
-
-        // --- Route Handling (URL Query Params & Back Button) ---
-        window.addEventListener('popstate', (e) => {
-            handleRoute();
-        });
-
+        window.addEventListener('popstate', handleRoute);
         function handleRoute() {
             const params = new URLSearchParams(window.location.search);
-            if (params.has('a') && params.has('h') && params.has('c')) {
-                // UI 동기화
-                amountInput.value = parseInt(params.get('a')).toLocaleString();
-                selectedHappiness = parseInt(params.get('h'));
-                selectedCategoryMultiplier = parseFloat(params.get('c'));
-                
-                document.querySelectorAll('.emoji-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.getAttribute('onclick').includes(selectedHappiness)) btn.classList.add('active');
-                });
-                document.querySelectorAll('.category-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.getAttribute('onclick').includes(selectedCategoryMultiplier)) {
-                        btn.classList.add('active');
-                        selectedCategoryText = btn.innerText;
-                    }
-                });
-
-                // 계산 및 화면 전환 (URL 변경 안 함)
-                goToResult(false);
-            } else {
-                // 메인 페이지 표시
-                goToInput(false);
-            }
+            if (params.has('a')) goToResult(false); else goToInput(false);
         }
-
-        // 초기 로드 시 라우팅 실행
-        window.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('a') && params.has('h') && params.has('c')) {
-                // 공유 링크로 들어왔을 때만 애니메이션 우회 또는 강제 전환
-                document.getElementById('inputPage').classList.remove('active');
-                document.getElementById('resultPage').classList.remove('active');
-                handleRoute();
-            } else {
-                // 파라미터가 없으면 CSS 디폴트(inputPage active) 그대로 두어 즉시 렌더링되게 함
-                // popstate 대응을 위해 현재 상태를 history에 기록
-                window.history.replaceState({ screen: 'input' }, '', window.location.href);
-            }
-        });
+        window.addEventListener('DOMContentLoaded', handleRoute);
+        function shareKakao() { showAlert('🚧 안내', '카카오 공유 기능은 점검 중입니다.'); }
     </script>
 </body>
 </html>
