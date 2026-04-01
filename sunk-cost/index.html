@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Open Graph (공유 미리보기 최적화) -->
+    <meta property="og:title" content="매몰비용 탈출 계산기 📉">
+    <meta property="og:description" content="아까워서 못 그만두겠나요? 지금 바로 냉정한 탈출 견적을 받아보세요!">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1542382103-62589547ea8e?q=80&w=800&auto=format&fit=crop">
+    <meta property="og:type" content="website">
+
+    <title>매몰비용 탈출 계산기 | 열매스튜디오</title>
+    
+    <!-- Fonts: Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    
+    <!-- Kakao SDK -->
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --primary-cyan: #00d2ff;
+            --accent-magenta: #f03e3e;
+            --text-main: #f0f6fc;
+            --text-dim: #8b949e;
+            --border-color: #30363d;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pretendard', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Screen Wrapper */
+        .screen {
+            width: 100%;
+            max-width: 480px;
+            display: none; 
+            flex-direction: column;
+            animation: slideIn var(--transition-speed) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-30px); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary-cyan);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .logo img {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            font-size: 17px; 
+            color: var(--text-main); 
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-main);
+            font-size: 20px; 
+            font-weight: 800;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-cyan);
+        }
+
+        .unit {
+            position: absolute;
+            right: 16px;
+            color: var(--text-dim);
+            font-size: 16px; 
+            font-weight: 700;
+        }
+
+        /* Success Probability Slider */
+        .slider-container {
+            margin-top: 10px;
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary-cyan);
+            height: 8px;
+            background: var(--bg-color);
+            border-radius: 4px;
+            outline: none;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-magenta));
+            border: none;
+            border-radius: 14px;
+            padding: 20px;
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-calculate:active {
+            transform: scale(0.98);
+            filter: brightness(1.1);
+        }
+
+        /* Result Screen Styles */
+        #resultPage {
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        .result-title {
+            font-size: 16px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .escape-status {
+            font-size: 60px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .score-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary-cyan);
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--text-dim);
+            font-weight: 700;
+        }
+
+        .ai-analysis {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: var(--text-main);
+            padding: 0 20px;
+            word-break: keep-all; 
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 0 20px;
+        }
+
+        .btn-share {
+            flex: 1;
+            padding: 14px 0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-share.kakao { background: #FEE500; color: #000000; }
+        .btn-share.link { background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); }
+        
+        .btn-home {
+            background: var(--border-color);
+            color: var(--text-main);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Disclaimer Modal */
+        .custom-alert {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .custom-alert-content {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-cyan);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+            animation: popIn 0.3s forwards;
+            line-height: 1.5;
+        }
+        .custom-alert-title { color: var(--primary-cyan); font-weight: 800; margin-bottom: 12px; }
+        .footer-disclaimer {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px 10px;
+            margin-top: auto; 
+            border-top: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .footer-link { font-size: 11px; color: var(--text-dim); font-weight: 600; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+
+    <!-- [SCREEN 1: INPUT] -->
+    <div class="screen active" id="inputPage">
+        <header>
+            <div class="logo" onclick="location.href='index.html'">
+                <img src="data:image/png;base64,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" alt="Icon">
+                Yeolmae Studio
+            </div>
+            <h1>매몰비용 탈출 계산기</h1>
+        </header>
+
+        <div class="card">
+            <!-- Sunk Cost Input -->
+            <div class="input-group">
+                <label>이미 쏟아부은 비용 (돈/시간)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="sunkCost" placeholder="0" maxlength="15">
+                    <span class="unit">원</span>
+                </div>
+                <p style="font-size: 12px; color: var(--text-dim); margin-top: 5px;">* 아까워서 못 그만두는 바로 그 금액</p>
+            </div>
+
+            <!-- Future Cost Input -->
+            <div class="input-group">
+                <label>앞으로 더 투자해야 할 비용</label>
+                <div class="input-wrapper">
+                    <input type="text" id="futureCost" placeholder="0" maxlength="15">
+                    <span class="unit">원</span>
+                </div>
+            </div>
+
+            <!-- Probability Slider -->
+            <div class="input-group">
+                <label>이게 '대박'날 확률: <span id="probValue" style="color: var(--primary-cyan)">50</span>%</label>
+                <div class="slider-container">
+                    <input type="range" id="probability" min="0" max="100" value="50">
+                    <div class="slider-labels">
+                        <span>거의 절망</span>
+                        <span>반반</span>
+                        <span>근자감 뿜뿜</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-calculate" onclick="calculateEscape()">탈출 견적 뽑기</button>
+        </div>
+    </div>
+
+    <!-- [SCREEN 2: RESULT] -->
+    <div class="screen" id="resultPage">
+        <div class="result-title">나의 탈출 권고 등급</div>
+        <div class="escape-status" id="escapeStatus">EMERGENCY</div>
+        
+        <div class="score-box">
+            <div class="score-value" id="escapeScore">0</div>
+            <div class="score-label">EXIT INDEX (탈출지수)</div>
+        </div>
+
+        <div class="ai-analysis" id="aiComment">분석 중...</div>
+        
+        <div class="result-actions">
+            <button class="btn-share kakao" onclick="shareKakao()">💬 결과 공유</button>
+            <button class="btn-share link" onclick="copyLink()">🔗 링크 복사</button>
+        </div>
+
+        <div style="margin-top: auto; padding-bottom: 20px;">
+            <button class="btn-home" onclick="goToInput()">이전으로</button>
+        </div>
+    </div>
+
+    <footer class="footer-disclaimer">
+        <span class="footer-link" onclick="showAlert('이용약관', '열매스튜디오의 탈출 권고는 심리적 분석용이며 실제 경제적 손실을 책임지지 않습니다.')">이용약관</span>
+        <span class="footer-link" onclick="showAlert('개인정보', '내역은 저장되지 않습니다. 냉정한 판단만 챙겨가세요.')">개인정보</span>
+        <span class="footer-link" onclick="showAlert('열매스튜디오', 'Yeolmae Studio Prototype P2')">© 2026 Yeolmae Studio</span>
+    </footer>
+
+    <!-- Custom Alert Modal -->
+    <div class="custom-alert" id="customAlert">
+        <div class="custom-alert-content">
+            <div class="custom-alert-title" id="alertTitle">알림</div>
+            <div class="custom-alert-text" id="alertText">내용</div>
+            <button onclick="closeAlert()" style="margin-top:20px; padding:8px 20px; border-radius:8px; border:none; background:var(--border-color); color:white; cursor:pointer;">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // Kakao SDK Init
+        if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
+            Kakao.init('57cdad81ce5f54c9c0220d9b346276ff');
+        }
+
+        const sunkInput = document.getElementById('sunkCost');
+        const futureInput = document.getElementById('futureCost');
+        const probSlider = document.getElementById('probability');
+        const probDisplay = document.getElementById('probValue');
+
+        // Input formatting
+        [sunkInput, futureInput].forEach(input => {
+            input.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                e.target.value = value ? Number(value).toLocaleString() : '';
+            });
+        });
+
+        probSlider.addEventListener('input', (e) => {
+            probDisplay.innerText = e.target.value;
+        });
+
+        function showAlert(title, text) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertText').innerText = text;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+        function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
+
+        function calculateEscape() {
+            const sunk = parseInt(sunkInput.value.replace(/,/g, '')) || 0;
+            const future = parseInt(futureInput.value.replace(/,/g, '')) || 0;
+            const prob = parseInt(probSlider.value);
+
+            if (sunk === 0 && future === 0) {
+                showAlert('알림', '투자한 비용이나 투자할 비용을 입력해주세요!');
+                return;
+            }
+
+            // [Escape Index Algorithm]
+            // 기대가치(Expected Value) = 성공확률 * 10 (대략적 보상) - 추가비용의 상대적 무게
+            // 지수가 높을수록 탈출해야 함.
+            // 기본 점수: 미래의 손실 가능성 반영
+            let score = 0;
+            if (future > 0) {
+                // 추가 비용이 발생할수록, 확률이 낮을수록 지수 상승
+                score = Math.round(((future * (100 - prob)) / (sunk + future + 1)) * 1.5);
+            } else {
+                // 이미 끝난 거면 매몰비용에 대한 자책 지수
+                score = Math.round((100 - prob) * 0.8);
+            }
+            
+            // 보정: 점수가 너무 튀지 않게 0~100 사이로
+            score = Math.min(Math.max(score, 0), 100);
+
+            let status = "";
+            let color = "";
+            let commentPool = [];
+
+            if (score >= 80) {
+                status = "EMERGENCY";
+                color = "#ff1744"; // Magenta Red
+                commentPool = [
+                    "🔴 당장 도망치세요! 당신은 지금 불타는 배 위에서 창문을 닦고 있습니다.",
+                    "🔴 매몰비용에 눈이 멀어 미래까지 불태우고 계시군요. 손절도 실력입니다.",
+                    "🔴 AI 분석 결과: '희망고문' 수치 치사량 초과. 당장 손을 떼지 않으면 대재앙입니다.",
+                    "🔴 과거가 아까워서 미래를 버리시겠습니까? 비겁한 후퇴가 아니라 현명한 철수입니다."
+                ];
+            } else if (score >= 50) {
+                status = "DANGER";
+                color = "#ff9100"; // Orange
+                commentPool = [
+                    "🟠 위험 신호 감지! '혹시나' 하는 마음이 당신의 지갑을 갉아먹고 있습니다.",
+                    "🟠 조금만 더 하면 될 것 같죠? 그게 바로 도박사들이 파산 직전에 하는 생각입니다.",
+                    "🟠 밑 빠진 독에 물 붓기 1단계. 지금이라도 독을 교체하든 물을 끄든 하세요.",
+                    "🟠 기회비용을 생각하세요. 그 돈과 시간으로 다른 걸 했다면 이미 성공했을 겁니다."
+                ];
+            } else if (score >= 20) {
+                status = "CAUTION";
+                color = "#ffd600"; // Yellow
+                commentPool = [
+                    "🟡 아슬아슬한 노란불. 아직 탈출할 기회는 있습니다. 냉정하게 한 번만 더 생각해보세요.",
+                    "🟡 감정은 배제하고 데이터만 보세요. 본전 생각나기 시작하면 그때부턴 지옥입니다.",
+                    "🟡 현상 유지 중입니다. 하지만 반등의 기미가 없다면 과감한 결단이 필요할 때입니다.",
+                    "🟡 버티는 게 답일 때도 있지만, 지금은 탈출 계획서를 미리 써두어야 할 시점입니다."
+                ];
+            } else {
+                status = "SAFE ZONE";
+                color = "#00e676"; // Green
+                commentPool = [
+                    "🟢 합리적인 수준의 베팅입니다. 조금 더 밀고 나가봐도 괜찮을 확률이 높네요.",
+                    "🟢 매몰비용보다는 미래 가치에 집중하고 계시군요. 계속 진행하셔도 좋습니다.",
+                    "🟢 '아까워서' 하는 게 아니라 '가치가 있어서' 하는 지름길에 서 계십니다. 파이팅!",
+                    "🟢 성공 확률이 비용을 이기고 있습니다. 승부수를 던질 타이밍일지도 모릅니다!"
+                ];
+            }
+
+            document.getElementById('escapeStatus').innerText = status;
+            document.getElementById('escapeStatus').style.color = color;
+            document.getElementById('escapeScore').innerText = score;
+            document.getElementById('aiComment').innerText = commentPool[Math.floor(Math.random() * commentPool.length)];
+
+            // Screen Switch
+            const inputPage = document.getElementById('inputPage');
+            const resultPage = document.getElementById('resultPage');
+            inputPage.style.animation = "fadeOut 0.4s forwards";
+            setTimeout(() => {
+                inputPage.classList.remove('active');
+                resultPage.classList.add('active');
+            }, 400);
+        }
+
+        function goToInput() {
+            const inputPage = document.getElementById('inputPage');
+            const resultPage = document.getElementById('resultPage');
+            resultPage.style.animation = "fadeOut 0.4s forwards";
+            setTimeout(() => {
+                resultPage.classList.remove('active');
+                inputPage.style.animation = "slideIn 0.5s forwards";
+                inputPage.classList.add('active');
+                inputPage.style.opacity = "1";
+            }, 400);
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showAlert('복사 완료', '탈출 좌표가 복사되었습니다!');
+            });
+        }
+
+        function shareKakao() {
+            try {
+                const status = document.getElementById('escapeStatus').innerText;
+                const score = document.getElementById('escapeScore').innerText;
+                Kakao.Share.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                        title: '📉 내 매몰비용 탈출 견적: ' + status,
+                        description: '탈출 지수 ' + score + '점! 나는 과연 지금 도망쳐야 할까?',
+                        imageUrl: 'https://images.unsplash.com/photo-1542382103-62589547ea8e?q=80&w=800&auto=format&fit=crop',
+                        link: { mobileWebUrl: window.location.href, webUrl: window.location.href },
+                    },
+                    buttons: [{ title: '나도 측정하기', link: { mobileWebUrl: window.location.href, webUrl: window.location.href } }],
+                });
+            } catch(e) { showAlert('알림', '카카오 공유를 준비 중입니다.'); }
+        }
+    </script>
+</body>
+</html>
